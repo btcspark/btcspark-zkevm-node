@@ -1,11 +1,17 @@
 set -x
 
+run(){
+    # make run
+    make run-explorer
+}
 containers() {
     exec > "$FUNCNAME.log" 2>&1
     # docker-compose ps --all --format json >tmp-containers.json
     docker-compose ps --all
 }
-
+probe(){
+    grep -irE 'STATEDB.*:|POOLDB.*:|EVENTDB.*:|NETWORK'  Makefile
+}
 probeL1() {
     # exec > "$FUNCNAME.log" 2>&1
 
