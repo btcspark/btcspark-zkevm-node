@@ -187,7 +187,7 @@ func main() {
 			Flags:   restoreFlags,
 		},
 	}
-
+	// NOTE main entry point
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)

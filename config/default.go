@@ -1,6 +1,6 @@
 package config
 
-// DefaultValues is the default configuration
+// NOTE DefaultValues is the default configuration
 const DefaultValues = `
 IsTrustedSequencer = false
 ForkUpgradeBatchNumber = 0

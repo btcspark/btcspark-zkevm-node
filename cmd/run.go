@@ -40,6 +40,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// NOTE service entry points
 func start(cliCtx *cli.Context) error {
 	c, err := config.Load(cliCtx, true)
 	if err != nil {
@@ -129,6 +130,7 @@ func start(cliCtx *cli.Context) error {
 	c.Aggregator.ForkId = currentForkID
 	log.Infof("Chain ID read from POE SC = %v", l2ChainID)
 
+	// NOTE read from state db and send to l1 network
 	ethTxManagerStorage, err := ethtxmanager.NewPostgresStorage(c.State.DB)
 	if err != nil {
 		log.Fatal(err)
@@ -148,6 +150,7 @@ func start(cliCtx *cli.Context) error {
 	if c.Metrics.ProfilingEnabled {
 		go startProfilingHttpServer(c.Metrics)
 	}
+	// NOTE start the specific components
 	for _, component := range components {
 		switch component {
 		case AGGREGATOR:
@@ -157,6 +160,7 @@ func start(cliCtx *cli.Context) error {
 			if err != nil {
 				log.Fatal(err)
 			}
+			// NOTE start aggregator
 			go runAggregator(cliCtx.Context, c.Aggregator, etherman, etm, st)
 		case SEQUENCER:
 			c.Sequencer.StreamServer.Log = datastreamerlog.Config{
@@ -174,6 +178,7 @@ func start(cliCtx *cli.Context) error {
 				poolInstance = createPool(c.Pool, c.State.Batch.Constraints, l2ChainID, st, eventLog)
 			}
 			seq := createSequencer(*c, poolInstance, ethTxManagerStorage, st, eventLog)
+			// NOTE start squencer
 			go seq.Start(cliCtx.Context)
 		case SEQUENCE_SENDER:
 			ev.Component = event.Component_Sequence_Sender
@@ -186,6 +191,7 @@ func start(cliCtx *cli.Context) error {
 				poolInstance = createPool(c.Pool, c.State.Batch.Constraints, l2ChainID, st, eventLog)
 			}
 			seqSender := createSequenceSender(*c, poolInstance, ethTxManagerStorage, st, eventLog)
+			// NOTE start squence sender
 			go seqSender.Start(cliCtx.Context)
 		case RPC:
 			ev.Component = event.Component_RPC
@@ -206,6 +212,7 @@ func start(cliCtx *cli.Context) error {
 			for _, a := range cliCtx.StringSlice(config.FlagHTTPAPI) {
 				apis[a] = true
 			}
+			// NOTE start l2 jsonrpc server
 			go runJSONRPCServer(*c, etherman, l2ChainID, poolInstance, st, apis)
 		case SYNCHRONIZER:
 			ev.Component = event.Component_Synchronizer
@@ -217,6 +224,7 @@ func start(cliCtx *cli.Context) error {
 			if poolInstance == nil {
 				poolInstance = createPool(c.Pool, c.State.Batch.Constraints, l2ChainID, st, eventLog)
 			}
+			// NOTE start synchronizer
 			go runSynchronizer(*c, etherman, etm, st, poolInstance, eventLog)
 		case ETHTXMANAGER:
 			ev.Component = event.Component_EthTxManager
@@ -226,6 +234,7 @@ func start(cliCtx *cli.Context) error {
 				log.Fatal(err)
 			}
 			etm := createEthTxManager(*c, ethTxManagerStorage, st)
+			// NOTE start eth tx manager
 			go etm.Start()
 		case L2GASPRICER:
 			ev.Component = event.Component_GasPricer
@@ -237,6 +246,7 @@ func start(cliCtx *cli.Context) error {
 			if poolInstance == nil {
 				poolInstance = createPool(c.Pool, c.State.Batch.Constraints, l2ChainID, st, eventLog)
 			}
+			// NOTE start l2 gas pricer
 			go runL2GasPriceSuggester(c.L2GasPriceSuggester, st, poolInstance, etherman)
 		}
 	}
@@ -244,7 +254,7 @@ func start(cliCtx *cli.Context) error {
 	if c.Metrics.Enabled {
 		go startMetricsHttpServer(c.Metrics)
 	}
-
+	// NOTE wait for signal to stop
 	waitSignal(cancelFuncs)
 
 	return nil

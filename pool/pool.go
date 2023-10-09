@@ -31,7 +31,7 @@ var (
 	ErrReplaceUnderpriced = errors.New("replacement transaction underpriced")
 )
 
-// Pool is an implementation of the Pool interface
+// NOTE Pool is an implementation of the Pool interface
 // that uses a postgres database to store the data
 type Pool struct {
 	storage

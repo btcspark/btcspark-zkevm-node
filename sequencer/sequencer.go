@@ -79,6 +79,7 @@ func (s *Sequencer) Start(ctx context.Context) {
 
 	err := s.pool.MarkWIPTxsAsPending(ctx)
 	if err != nil {
+		// NOTE WIP refers to Work In Progress
 		log.Fatalf("failed to mark WIP txs as pending, err: %v", err)
 	}
 
