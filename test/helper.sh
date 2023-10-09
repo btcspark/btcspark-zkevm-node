@@ -1,24 +1,36 @@
 set -x
 
-run(){
-    # make run
+shopt -s expand_aliases
+alias geth="docker-compose exec -T zkevm-mock-l1-network geth"
+
+run() {
+    make restart
+    make stop-explorer
     make run-explorer
 }
 containers() {
-    exec > "$FUNCNAME.log" 2>&1
+    exec >"$FUNCNAME.log" 2>&1
     # docker-compose ps --all --format json >tmp-containers.json
     docker-compose ps --all
 }
-probe(){
-    grep -irE 'STATEDB.*:|POOLDB.*:|EVENTDB.*:|NETWORK'  Makefile
+probe() {
+    grep -irE 'STATEDB.*:|POOLDB.*:|EVENTDB.*:|NETWORK' Makefile
 }
-probeL1() {
-    # exec > "$FUNCNAME.log" 2>&1
+
+onlyProbeL1() {
+    exec > "$FUNCNAME.log" 2>&1
+
+    # docker-compose --help
+    # docker-compose down -v zkevm-mock-l1-network
+    # docker-compose up -d zkevm-mock-l1-network
+    # return
 
     # docker-compose exec -T zkevm-mock-l1-network uname -a
-    # docker-compose exec -T zkevm-mock-l1-network geth --help
-    # docker-compose exec -T zkevm-mock-l1-network geth version
-    # docker-compose exec -T zkevm-mock-l1-network geth license
+    geth --help
+    geth version
+    geth license
+    return
+
     # docker-compose logs --help
     docker-compose logs \
         --no-log-prefix \
@@ -27,24 +39,22 @@ probeL1() {
     # --tail 10 \
 }
 
-probeStateDB(){
-    NAME=zkevm-state-db
-    CONN="--pset pager=0 --host localhost --port 5432 state_db  state_user"
-    # CONN="--list --host localhost --port 5432 --no-password state_db  state_user"
-    cd test
-    # exec > "$FUNCNAME.log" 2>&1
-    # docker-compose exec -T $NAME psql --help
-    # docker-compose exec -T $NAME psql --version
-    # docker-compose exec -it $NAME psql --command '\pset pager 0' $CONN 
-    docker-compose exec -it $NAME psql --command '\?' $CONN 
-    # docker-compose exec -it $NAME psql $CONN  < psqldb.sql
-    # docker-compose exec -T $NAME psql --host localhost --port 5432 state_db  state_user
-    # docker-compose exec -T $NAME psql --version
-    return
-    docker-compose logs \
-        --no-log-prefix \
-        --no-color \
-        $NAME
+collectionLog() {
+    for name in \
+        zkevm-approve \
+        zkevm-sync \
+        zkevm-eth-tx-manager \
+        zkevm-sequencer \
+        zkevm-sequence-sender \
+        zkevm-l2gaspricer \
+        zkevm-aggregator \
+        zkevm-json-rpc \
+        zkevm-mock-l1-network \
+        zkevm-prover; do
+        docker-compose logs \
+            --no-log-prefix \
+            --no-color \
+            $name >$name.log
+    done
 }
-
 $@

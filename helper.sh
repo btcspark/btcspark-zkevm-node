@@ -23,13 +23,15 @@ probeCode() {
 probe() {
     exec >"$FUNCNAME.log" 2>&1
     zkevm-node --version
-    zkevm-node version
+    # zkevm-node version
 
     zkevm-node --help
-    zkevm-node help
+    # zkevm-node help
 
     zkevm-node run --help
-    zkevm-node help run
+
+    zkevm-node approve --help
+    # zkevm-node help run
     return
     # gh repo list -h
     # gh help formatting
