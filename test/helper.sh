@@ -2,6 +2,18 @@ set -x
 
 shopt -s expand_aliases
 alias geth="docker-compose exec -T zkevm-mock-l1-network geth"
+alias gethL2="docker-compose exec -T zkevm-explorer-json-rpc /app/zkevm-node"
+
+debug() {
+    exec >"$FUNCNAME.log" 2>&1
+    make stop-explorer
+    make run-explorer
+    sleep 1m
+    NAME=zkevm-explorer-l2
+    docker-compose exec -T $NAME  env
+    docker-compose logs $NAME | grep -iE --max-count=20 'error'
+    return
+}
 
 run() {
     make restart
@@ -12,6 +24,13 @@ containers() {
     exec >"$FUNCNAME.log" 2>&1
     # docker-compose ps --all --format json >tmp-containers.json
     docker-compose ps --all
+}
+
+onlyProbeL2() {
+    # exec > "$FUNCNAME.log" 2>&1
+    gethL2 --help
+    gethL2 run --help
+    gethL2 version
 }
 
 onlyProbeL1() {

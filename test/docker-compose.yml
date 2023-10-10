@@ -283,6 +283,9 @@ services:
       - MIX_ENV=prod
       - LOGO=/images/blockscout_logo.svg
       - LOGO_FOOTER=/images/blockscout_logo.svg
+      - INDEXER_RECEIPTS_BATCH_SIZE=10
+      - INDEXER_CATCHUP_BLOCKS_BATCH_SIZE=2
+      - INDEXER_CATCHUP_BLOCKS_CONCURRENCY=2
     command:
       - "/bin/sh"
       - "-c"

@@ -60,7 +60,9 @@ ReadTimeout = "60s"
 WriteTimeout = "60s"
 MaxRequestsPerIPAndSecond = 5000
 SequencerNodeURI = ""
-EnableL2SuggestedGasPricePolling = false
+BatchRequestsEnabled = true
+BatchRequestsLimit = 100
+EnableL2SuggestedGasPricePolling = true
 	[RPC.WebSockets]
 		Enabled = true
 		Port = 8133
