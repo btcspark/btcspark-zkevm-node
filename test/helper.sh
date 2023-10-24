@@ -105,4 +105,26 @@ probe() {
     # psql --echo-hidden $DATABASE_URL --file=zkevm-event.sql --output=zkevm-event.log
 }
 
+tmp(){
+    docker-compose stop zkevm-json-rpc
+    docker-compose rm zkevm-json-rpc
+    docker-compose up -d zkevm-json-rpc
+    docker-compose logs -f zkevm-json-rpc
+
+}
+
+archiveStrace(){
+    DATE=$(date +%Y%m%d-%H%M%S)
+    FILES="strace-out/* component-call-map.log zkevm-node-container-ip.txt"
+    tar -jcf zkevm-node-strace-$DATE.tar.bz2 $FILES
+    rm -rf $FILES
+}
+
+probeStrace(){
+    # exec >"$FUNCNAME.log" 2>&1
+    # docker-compose ps -q | xargs docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' > zkevm-node-container-ip.txt
+    # ls | xargs grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' | sort -u
+    return
+}
+
 $@
