@@ -470,12 +470,12 @@ run: ## Runs a full node
 	$(RUNPOOLDB)
 	$(RUNEVENTDB)
 	$(RUNL1NETWORK)
-	sleep 1
+	sleep 5
 	$(RUNZKPROVER)
 	$(RUNAPPROVE)
-	sleep 3
+	sleep 5
 	$(RUNSYNC)
-	sleep 4
+	sleep 10
 	$(RUNETHTXMANAGER)
 	$(RUNSEQUENCER)
 	$(RUNSEQUENCESENDER)

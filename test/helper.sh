@@ -115,16 +115,35 @@ tmp(){
 
 archiveStrace(){
     DATE=$(date +%Y%m%d-%H%M%S)
-    FILES="strace-out/* component-call-map.log zkevm-node-container-ip.txt"
+    FILES="strace-out/* *.log"
     tar -jcf zkevm-node-strace-$DATE.tar.bz2 $FILES
-    rm -rf $FILES
+    # rm -rf $FILES
+}
+
+collectStrace(){
+    exec >"$FUNCNAME.log" 2>&1
+    make stop
+    rm -rf strace-out/*
+    make run
+
+    sleep 20s
+    cd /mnt/code/org-0xPolygonHermez/zkevm-contracts
+    bash helper.sh probe
+    cd -
+
+    docker-compose ps -q | xargs docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
+    sleep 20s
+    make stop
+    return
 }
 
 probeStrace(){
     # exec >"$FUNCNAME.log" 2>&1
-    # docker-compose ps -q | xargs docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' > zkevm-node-container-ip.txt
+    cd strace-out
+    # wc *
     # ls | xargs grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' | sort -u
-    return
-}
 
+    # grep -iorn 'input\\":\\"0x\w*' tmp.log | sort -u
+    # grep -irn 'eth_\w*'  l1-filter-by-method.log
+}
 $@
