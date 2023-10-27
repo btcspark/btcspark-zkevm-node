@@ -40,6 +40,17 @@ probe() {
         --limit 200
     # --json name
     # --jq '.'
+    b2-zkevm-node --version
+    b2-zkevm-node version
+
+    b2-zkevm-node --help
+    b2-zkevm-node help
+
+    b2-zkevm-node run --help
+
+    b2-zkevm-node approve --help
+    b2-zkevm-node help run
+    return
 }
 
 $@
