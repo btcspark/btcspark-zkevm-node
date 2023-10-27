@@ -26,5 +26,9 @@ cmd/__debug_bin
 .venv
 
 *metrics.txt
+<<<<<<< HEAD
 tmp*
 *.log
+=======
+*.log
+>>>>>>> 69f92f1e (chore: add push-docker target)
