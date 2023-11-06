@@ -16,9 +16,6 @@
 /test/*.db/*
 
 **/.DS_Store
-.vscode
-.idea/
-.env
 out.dat
 
 cmd/__debug_bin
@@ -26,9 +23,5 @@ cmd/__debug_bin
 .venv
 
 *metrics.txt
-<<<<<<< HEAD
 tmp*
 *.log
-=======
-*.log
->>>>>>> 69f92f1e (chore: add push-docker target)

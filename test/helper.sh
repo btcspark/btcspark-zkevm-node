@@ -10,7 +10,7 @@ debug() {
     make run-explorer
     sleep 1m
     NAME=zkevm-explorer-l2
-    docker-compose exec -T $NAME  env
+    docker-compose exec -T $NAME env
     docker-compose logs $NAME | grep -iE --max-count=20 'error'
     return
 }
@@ -34,7 +34,7 @@ onlyProbeL2() {
 }
 
 onlyProbeL1() {
-    exec > "$FUNCNAME.log" 2>&1
+    exec >"$FUNCNAME.log" 2>&1
 
     # docker-compose --help
     # docker-compose down -v zkevm-mock-l1-network
@@ -105,7 +105,7 @@ probe() {
     # psql --echo-hidden $DATABASE_URL --file=zkevm-event.sql --output=zkevm-event.log
 }
 
-tmp(){
+tmp() {
     docker-compose stop zkevm-json-rpc
     docker-compose rm zkevm-json-rpc
     docker-compose up -d zkevm-json-rpc
@@ -113,14 +113,14 @@ tmp(){
 
 }
 
-archiveStrace(){
+archiveStrace() {
     DATE=$(date +%Y%m%d-%H%M%S)
     FILES="strace-out/* *.log"
     tar -jcf zkevm-node-strace-$DATE.tar.bz2 $FILES
     # rm -rf $FILES
 }
 
-collectStrace(){
+collectStrace() {
     exec >"$FUNCNAME.log" 2>&1
     make stop
     rm -rf strace-out/*
@@ -137,7 +137,7 @@ collectStrace(){
     return
 }
 
-probeStrace(){
+probeStrace() {
     # exec >"$FUNCNAME.log" 2>&1
     cd strace-out
     # wc *
@@ -146,4 +146,17 @@ probeStrace(){
     # grep -iorn 'input\\":\\"0x\w*' tmp.log | sort -u
     # grep -irn 'eth_\w*'  l1-filter-by-method.log
 }
+
+repoStatus() {
+    for item in \
+        /ssd/code/work/b2network/b2-zkevm-prover \
+        /ssd/code/work/b2network/b2-zkevm-node \
+        /ssd/code/work/b2network/b2-zkevm-contracts \
+        /ssd/code/work/b2network/b2-node; do
+        # git -C $item status
+        # git -C $item branch
+        git -C $item diff
+    done
+}
+
 $@

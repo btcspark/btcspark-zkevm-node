@@ -470,18 +470,18 @@ run: ## Runs a full node
 	$(RUNPOOLDB)
 	$(RUNEVENTDB)
 	$(RUNL1NETWORK)
-	sleep 5
-	$(RUNZKPROVER)
-	$(RUNAPPROVE)
-	sleep 5
-	$(RUNSYNC)
-	sleep 10
-	$(RUNETHTXMANAGER)
-	$(RUNSEQUENCER)
-	$(RUNSEQUENCESENDER)
-	$(RUNL2GASPRICER)
-	$(RUNAGGREGATOR)
-	$(RUNJSONRPC)
+	# sleep 5
+	# $(RUNZKPROVER)
+	# $(RUNAPPROVE)
+	# sleep 5
+	# $(RUNSYNC)
+	# sleep 10
+	# $(RUNETHTXMANAGER)
+	# $(RUNSEQUENCER)
+	# $(RUNSEQUENCESENDER)
+	# $(RUNL2GASPRICER)
+	# $(RUNAGGREGATOR)
+	# $(RUNJSONRPC)
 
 .PHONY: stop
 stop: ## Stops all services

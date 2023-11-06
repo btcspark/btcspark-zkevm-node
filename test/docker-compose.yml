@@ -6,7 +6,7 @@ networks:
 services:
   grafana:
     container_name: grafana
-    image: grafana/grafana-oss
+    image: ${GRAFANA_IMAGE}
     volumes:
       - ./config/grafana/datasources.yml:/etc/grafana/provisioning/datasources/default.yml:ro
       - ./config/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/default.yml:ro
@@ -22,7 +22,7 @@ services:
 
   telegraf:
     container_name: telegraf
-    image: telegraf
+    image: ${TELEGRAF_IMAGE}
     volumes:
       - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -38,7 +38,7 @@ services:
 
   grafana-db:
     container_name: grafana-db
-    image: postgres:15
+    image: ${PG_IMAGE}
     expose:
       - 5432
     environment:
@@ -48,7 +48,7 @@ services:
 
   zkevm-sequencer:
     container_name: zkevm-sequencer
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     ports:
       - 9092:9091 # needed if metrics enabled
       - 6060:6060
@@ -62,15 +62,15 @@ services:
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
       - ./:/datastreamer
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-sequencer.log  --string-limit=1024 --follow-forks /app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components sequencer"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components sequencer"
 
   zkevm-sequence-sender:
     container_name: zkevm-sequence-sender
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     environment:
       - ZKEVM_NODE_STATE_DB_HOST=zkevm-state-db
       - ZKEVM_NODE_POOL_DB_HOST=zkevm-pool-db
@@ -81,15 +81,15 @@ services:
       - ./sequencer.keystore:/pk/sequencer.keystore
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-sequencer-sender.log  --string-limit=1024 --follow-forks /app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components sequence-sender"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components sequence-sender"
 
   zkevm-json-rpc:
     container_name: zkevm-json-rpc
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     ports:
       - 8123:8123
       - 8133:8133 # needed if WebSockets enabled
@@ -106,11 +106,11 @@ services:
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-json-rpc.log  --string-limit=1024 --follow-forks /app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components rpc"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components rpc"
 
   zkevm-aggregator:
     container_name: zkevm-aggregator
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     ports:
       - 50081:50081
       - 9093:9091 # needed if metrics enabled
@@ -120,15 +120,15 @@ services:
     volumes:
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-aggregator.log  --string-limit=1024 --follow-forks /app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components aggregator"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components aggregator"
 
   zkevm-sync:
     container_name: zkevm-sync
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     ports:
       - 9095:9091 # needed if metrics enabled
     environment:
@@ -138,15 +138,15 @@ services:
     volumes:
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-sync.log  --string-limit=1024 --follow-forks /app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components synchronizer"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components synchronizer"
 
   zkevm-eth-tx-manager:
     container_name: zkevm-eth-tx-manager
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     ports:
       - 9094:9091 # needed if metrics enabled
     environment:
@@ -156,30 +156,30 @@ services:
       - ./aggregator.keystore:/pk/aggregator.keystore
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-eth-tx-manager.log  --string-limit=1024 --follow-forks /app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components eth-tx-manager"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components eth-tx-manager"
 
   zkevm-l2gaspricer:
     container_name: zkevm-l2gaspricer
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     environment:
       - ZKEVM_NODE_POOL_DB_HOST=zkevm-pool-db
     volumes:
       - ./test.keystore:/pk/keystore
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-l2gaspricer.log  --string-limit=1024 --follow-forks /app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components l2gaspricer"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components l2gaspricer"
 
   zkevm-state-db:
     container_name: zkevm-state-db
-    image: postgres:15
+    image: ${PG_IMAGE}
     deploy:
       resources:
         limits:
@@ -201,7 +201,7 @@ services:
 
   zkevm-pool-db:
     container_name: zkevm-pool-db
-    image: postgres:15
+    image: ${PG_IMAGE}
     deploy:
       resources:
         limits:
@@ -221,7 +221,7 @@ services:
 
   zkevm-event-db:
     container_name: zkevm-event-db
-    image: postgres:15
+    image: ${PG_IMAGE}
     deploy:
       resources:
         limits:
@@ -243,7 +243,7 @@ services:
 
   zkevm-explorer-l1:
     container_name: zkevm-explorer-l1
-    image: hermeznetwork/zkevm-explorer:latest
+    image: ${EXPLORER_IMAGE}
     ports:
       - 4000:4000
     environment:
@@ -262,7 +262,7 @@ services:
 
   zkevm-explorer-l1-db:
     container_name: zkevm-explorer-l1-db
-    image: postgres:15
+    image: ${PG_IMAGE}
     ports:
       - 5436:5432
     environment:
@@ -276,7 +276,7 @@ services:
 
   zkevm-explorer-l2:
     container_name: zkevm-explorer-l2
-    image: hermeznetwork/zkevm-explorer:latest
+    image: ${EXPLORER_IMAGE}
     ports:
       - 4001:4000
     environment:
@@ -300,7 +300,7 @@ services:
 
   zkevm-explorer-json-rpc:
     container_name: zkevm-explorer-json-rpc
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     ports:
       - 8124:8124
       - 8134:8134 # needed if WebSockets enabled
@@ -319,7 +319,7 @@ services:
 
   zkevm-explorer-l2-db:
     container_name: zkevm-explorer-l2-db
-    image: postgres:15
+    image: ${PG_IMAGE}
     ports:
       - 5437:5432
     environment:
@@ -330,48 +330,49 @@ services:
 
   zkevm-mock-l1-network:
     container_name: zkevm-mock-l1-network
-    image: hermeznetwork/geth-zkevm-contracts:v2.0.0-fork.6-geth1.12.0
+    image: ${B2_NODE_IMAGE}
     ports:
+      - 26658:26657
       - 8545:8545
       - 8546:8546
+      - 8126:8125
     volumes:
-      - ./strace-out:/strace-out
-    entrypoint: /bin/sh
-    command:
-      - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-mock-l1-network.log  --string-limit=1024 --follow-forks geth --http --http.api admin,eth,debug,miner,net,txpool,personal,web3 --http.addr 0.0.0.0 --http.corsdomain '*' --http.vhosts '*' --ws --ws.origins '*' --ws.addr 0.0.0.0 --dev --datadir /geth_data --syncmode full --rpc.allow-unprotected-txs"
+      - /root/b2-node-single-client-all-data:/root/.ethermintd
+      - ${PWD}:/host
+      # - ./strace-out:/strace-out
+
   zkevm-prover:
     container_name: zkevm-prover
-    image: hermeznetwork/zkevm-prover:v3.0.0-RC2
+    image: ${B2_ZKEVM_PROVER_IMAGE}
     ports:
       - 50061:50061 # MT
       - 50071:50071 # Executor
     volumes:
       - ./config/test.prover.config.json:/usr/src/app/config.json
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apt update && apt install -y strace && strace --output /strace-out/zkevm-prover.log  --string-limit=1024 --follow-forks zkProver -c /usr/src/app/config.json"
+      - "zkProver -c /usr/src/app/config.json"
 
   zkevm-approve:
     container_name: zkevm-approve
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     environment:
       - ZKEVM_NODE_STATE_DB_HOST=zkevm-state-db
     volumes:
       - ./sequencer.keystore:/pk/keystore
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
-      - ./strace-out:/strace-out
+      # - ./strace-out:/strace-out
     command:
       - "/bin/sh"
       - "-c"
-      - "apk update && apk add strace && strace --output /strace-out/zkevm-approve.log  --string-limit=1024 --follow-forks /app/zkevm-node approve --network custom --custom-network-file /app/genesis.json --key-store-path /pk/keystore --pw testonly --am 115792089237316195423570985008687907853269984665640564039457584007913129639935 -y --cfg /app/config.toml"
+      - "/app/zkevm-node approve --network custom --custom-network-file /app/genesis.json --key-store-path /pk/keystore --pw testonly --am 115792089237316195423570985008687907853269984665640564039457584007913129639935 -y --cfg /app/config.toml"
 
   zkevm-permissionless-db:
     container_name: zkevm-permissionless-db
-    image: postgres:15
+    image: ${PG_IMAGE}
     deploy:
       resources:
         limits:
@@ -393,7 +394,7 @@ services:
 
   zkevm-permissionless-node:
     container_name: zkevm-permissionless-node
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     ports:
       - 8125:8125
     environment:
@@ -420,7 +421,7 @@ services:
 
   zkevm-permissionless-prover:
     container_name: zkevm-permissionless-prover
-    image: hermeznetwork/zkevm-prover:v3.0.0-RC2
+    image: ${B2_ZKEVM_PROVER_IMAGE}
     ports:
       # - 50058:50058 # Prover
       - 50059:50052 # Mock prover
@@ -432,7 +433,7 @@ services:
       zkProver -c /usr/src/app/config.json
 
   zkevm-metrics:
-    image: prom/prometheus:v2.39.1
+    image: ${PROM_IMAGE}
     container_name: zkevm-metrics
     restart: unless-stopped
     ports:
@@ -445,7 +446,7 @@ services:
 
   zkevm-sh:
     container_name: zkevm-sh
-    image: zkevm-node
+    image: ${B2_ZKEVM_NODE_IMAGE}
     stdin_open: true 
     tty: true
     environment:
