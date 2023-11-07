@@ -5,7 +5,15 @@ alias geth="docker-compose exec -T zkevm-mock-l1-network geth"
 alias gethL2="docker-compose exec -T zkevm-explorer-json-rpc /app/zkevm-node"
 
 debug() {
-    exec >"$FUNCNAME.log" 2>&1
+    # exec >"$FUNCNAME.log" 2>&1
+    # docker-compose ps --help
+    # docker-compose ps -a | grep Exit
+    docker-compose ps 
+    # docker-compose ps -a
+
+    # docker-compose logs -f
+    # docker-compose logs zkevm-approve
+    return
     make stop-explorer
     make run-explorer
     sleep 1m

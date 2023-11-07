@@ -16,9 +16,9 @@
 /test/*.db/*
 
 **/.DS_Store
-.vscode
+# .vscode
 .idea/
-.env
+# .env
 out.dat
 
 cmd/__debug_bin
