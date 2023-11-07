@@ -466,13 +466,15 @@ stop-approve-matic: ## Stops approve in node container
 
 .PHONY: run
 run: ## Runs a full node
+	cd /root/b2-node-single-client-all-data && bash helper.sh restore
 	$(RUNSTATEDB)
 	$(RUNPOOLDB)
 	$(RUNEVENTDB)
 	$(RUNL1NETWORK)
 	sleep 5 
 	$(RUNZKPROVER)
-	# $(RUNAPPROVE)
+	sleep 15 
+	$(RUNAPPROVE)
 	# sleep 5
 	# $(RUNSYNC)
 	# sleep 10
