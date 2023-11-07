@@ -351,9 +351,8 @@ services:
       - ./config/test.prover.config.json:/usr/src/app/config.json
       # - ./strace-out:/strace-out
     command:
-      - "/bin/sh"
-      - "-c"
-      - "zkProver -c /usr/src/app/config.json"
+      - -c
+      - /usr/src/app/config.json
 
   zkevm-approve:
     container_name: zkevm-approve
