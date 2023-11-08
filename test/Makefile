@@ -473,17 +473,16 @@ run: ## Runs a full node
 	$(RUNL1NETWORK)
 	sleep 5 
 	$(RUNZKPROVER)
-	sleep 15 
 	$(RUNAPPROVE)
-	# sleep 5
-	# $(RUNSYNC)
-	# sleep 10
-	# $(RUNETHTXMANAGER)
-	# $(RUNSEQUENCER)
-	# $(RUNSEQUENCESENDER)
-	# $(RUNL2GASPRICER)
-	# $(RUNAGGREGATOR)
-	# $(RUNJSONRPC)
+	sleep 5
+	$(RUNSYNC)
+	sleep 10
+	$(RUNETHTXMANAGER)
+	$(RUNSEQUENCER)
+	$(RUNSEQUENCESENDER)
+	$(RUNL2GASPRICER)
+	$(RUNAGGREGATOR)
+	$(RUNJSONRPC)
 
 .PHONY: stop
 stop: ## Stops all services
