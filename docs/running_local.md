@@ -23,8 +23,8 @@ The current version of the environment requires `go`, `docker` and `docker-compo
 - <https://www.docker.com/get-started>
 - <https://docs.docker.com/compose/install/>
 
-The `zkevm-node` docker image must be built at least once and every time a change is made to the code.
-If you haven't build the `zkevm-node` image yet, you must run:
+The `b2-zkevm-node` docker image must be built at least once and every time a change is made to the code.
+If you haven't build the `b2-zkevm-node` image yet, you must run:
 
 ```bash
 make build-docker
@@ -32,16 +32,23 @@ make build-docker
 
 ## A look at how the binary works:
 
-The `zkevm-node` allows certain commands to interact with smart contracts, run certain components, create encryption files and print out debug information.
+The `b2-zkevm-node` allows certain commands to interact with smart contracts, run certain components, create encryption files and print out debug information.
 
 To interact with the binary program we provide docker compose files, and a Makefile to spin up/down the different services and components, ensuring a smooth deployment locally and better interface in command line for developers.
 
 ## Controlling the environment
 
-> All the data is stored inside of each docker container, this means once you remove the container, the data will be lost.
+> All the rollup data is stored inside of each docker container, this means once you remove the container, the data will be lost.
 
 To run the environment:
-
+Starting the L1 network requires network initialized data
+  1. which can be obtained locally from [b2network/b2-node-single-client-all-data](https://github.com/b2network/b2-node-single-client-all-data).
+  2. In addition, it can also exec npm deployRollupContract in repo [b2-zkevm-contracts/package.json at main · b2network/b2-zkevm-contracts](https://github.com/b2network/b2-zkevm-contracts/blob/main/package.json#L86) to generate. 
+  3. Then modify the configuration of the corresponding service in docker-compose.yml and mount it into the container. eg:
+      ```bash
+      intel-10400f b2-zkevm-node git:(develop) ✗ grep -irn 'b2-node-single-client-all-data' test/docker-compose.yml
+      345:      - /root/b2-node-single-client-all-data:/root/.ethermintd
+      ```
 The `test/` directory contains scripts and files for developing and debugging.
 
 ```bash
@@ -175,7 +182,7 @@ To configure your Metamask to use your local environment, follow these steps:
 5. Fill up the L2 network information
     1. `Network Name:` Polygon zkEVM - Local
     2. `New RPC URL:` <http://localhost:8123>
-    3. `ChainID:` 1001
+    3. `ChainID:` 102
     4. `Currency Symbol:` ETH
     5. `Block Explorer URL:` <http://localhost:4000>
 6. Click on Save
@@ -183,7 +190,7 @@ To configure your Metamask to use your local environment, follow these steps:
 8. Fill up the L1 network information
     1. `Network Name:` Geth - Local
     2. `New RPC URL:` <http://localhost:8545>
-    3. `ChainID:` 1337
+    3. `ChainID:` 102
     4. `Currency Symbol:` ETH
 9. Click on Save
 
@@ -191,10 +198,10 @@ To configure your Metamask to use your local environment, follow these steps:
 
 | Address | Description |
 |---|---|
-| 0x610178dA211FEF7D417bC0e6FeD39F05609AD788 | Proof of Efficiency |
-| 0xff0EE8ea08cEf5cb4322777F5CC3E8A584B8A4A0 | Bridge |
-| 0x5FbDB2315678afecb367f032d93F642f64180aa3 | Matic token |
-| 0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6 | GlobalExitRootManager |
+| 0x67d269191c92Caf3cD7723F116c85e6E9bf55933 | Proof of Efficiency |
+| TODO | Bridge |
+| 0x3Aa5ebB10DC797CAC828524e59A333d0A371443c | Matic token |
+| 0x09635F643e140090A9A8Dcd712eD6285858ceBef | GlobalExitRootManager |
 
 ## Deployer Account
 
