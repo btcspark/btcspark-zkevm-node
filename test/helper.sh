@@ -3,7 +3,8 @@ set -x
 shopt -s expand_aliases
 alias geth="docker-compose exec -T zkevm-mock-l1-network geth"
 alias gethL2="docker-compose exec -T zkevm-explorer-json-rpc /app/zkevm-node"
-
+DATE=$(date +%Y%m%d-%H%M%S)
+ 
 debug() {
     exec >"$FUNCNAME.log" 2>&1
     make stop-explorer
@@ -15,10 +16,13 @@ debug() {
     return
 }
 
-run() {
-    make restart
-    make stop-explorer
-    make run-explorer
+test() {
+    exec >"$FUNCNAME-$DATE.log" 2>&1
+    # make stop test-full-non-e2e
+    make stop test-e2e-group-1
+    # make stop test-e2e-group-4
+    # make stop test-e2e-group-4
+    # make stop test-e2e-group-4
 }
 containers() {
     exec >"$FUNCNAME.log" 2>&1

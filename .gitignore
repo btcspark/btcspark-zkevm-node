@@ -25,3 +25,4 @@ cmd/__debug_bin
 *metrics.txt
 tmp*
 *.log
+*.out

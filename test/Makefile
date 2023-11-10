@@ -466,7 +466,6 @@ stop-approve-matic: ## Stops approve in node container
 
 .PHONY: run
 run: ## Runs a full node
-	cd /root/b2-node-single-client-all-data && bash helper.sh restore
 	$(RUNSTATEDB)
 	$(RUNPOOLDB)
 	$(RUNEVENTDB)
@@ -487,6 +486,7 @@ run: ## Runs a full node
 .PHONY: stop
 stop: ## Stops all services
 	$(STOP)
+	cd /root/b2-node-single-client-all-data && bash helper.sh restore
 
 .PHONY: ship
 ship: ## Builds docker images and run them
