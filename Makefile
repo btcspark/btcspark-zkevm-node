@@ -84,10 +84,12 @@ build: ## Builds the binary locally into ./dist
 	$(GOENVVARS) go build -ldflags "all=$(LDFLAGS)" -o $(GOBIN)/$(GOBINARY) $(GOCMD)
 
 .PHONY: build-docker
-build-docker: ## Builds a docker image with the node binary
+image-build: ## Builds a docker image with the node binary
 	docker build -t ${IMAGE_TAG} -f ./Dockerfile .
-push-docker: ## Builds a docker image with the node binary
+image-push: ## Builds a docker image with the node binary
 	docker push --all-tags ${IMAGE_REPO}
+image-list:
+	docker images | grep 'ghcr.io/b2network/'
 
 .PHONY: build-docker-nc
 build-docker-nc: ## Builds a docker image with the node binary - but without build cache

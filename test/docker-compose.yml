@@ -336,6 +336,10 @@ services:
   zkevm-mock-l1-network:
     container_name: zkevm-mock-l1-network
     image: ${B2_NODE_IMAGE}
+    entrypoint:
+      - ethermintd
+    command:
+      - start
     ports:
       - 26658:26657
       - 8545:8545

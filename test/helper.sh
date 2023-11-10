@@ -4,7 +4,7 @@ shopt -s expand_aliases
 alias geth="docker-compose exec -T zkevm-mock-l1-network geth"
 alias gethL2="docker-compose exec -T zkevm-explorer-json-rpc /app/zkevm-node"
 DATE=$(date +%Y%m%d-%H%M%S)
- 
+
 debug() {
     exec >"$FUNCNAME.log" 2>&1
     make stop-explorer
@@ -18,11 +18,33 @@ debug() {
 
 test() {
     exec >"$FUNCNAME-$DATE.log" 2>&1
-    # make stop test-full-non-e2e
-    make stop test-e2e-group-1
+    make stop test-full-non-e2e
+    # make stop test-e2e-group-1
     # make stop test-e2e-group-4
     # make stop test-e2e-group-4
     # make stop test-e2e-group-4
+}
+
+addChainStateToB2Node() {
+    set -e
+    docker container rm -f b2-node
+    source .env
+    cd /root/b2-node-single-client-all-data 
+    bash helper.sh restore
+    CHAIN_REPO_ID=$(git log -1 --format='%h')
+    cd -
+    docker run \
+        --name b2-node \
+        --entrypoint sleep \
+        --volume /root/b2-node-single-client-all-data:/host \
+        --detach \
+        $B2_NODE_IMAGE infinity
+    docker container ls
+    docker exec -it b2-node sh -c 'mkdir -p /root/.ethermintd/ && cp -r /host/* /root/.ethermintd/ && ls /root/.ethermintd/'
+    docker commit --author tony-armstrong b2-node $B2_NODE_IMAGE-chainstate-$CHAIN_REPO_ID
+    docker container stop b2-node
+    docker container rm b2-node
+    return
 }
 containers() {
     exec >"$FUNCNAME.log" 2>&1
