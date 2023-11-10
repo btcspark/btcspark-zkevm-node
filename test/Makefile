@@ -485,6 +485,8 @@ run: ## Runs a full node
 
 .PHONY: stop
 stop: ## Stops all services
+	pwd
+	uname -a
 	$(STOP)
 	cd /root/b2-node-single-client-all-data && bash helper.sh restore
 
