@@ -16,13 +16,32 @@ debug() {
     return
 }
 
+test-e2e-probe() {
+    DIRNAME=tmp-test-e2e-20231114-162359
+    # wc $DIRNAME/*
+    grep -irncE 'err|fail' $DIRNAME
+    # grep -irncE 'err|fail' $DIRNAME/* | wc
+    # grep -irnE 'err|fail' $DIRNAME/test-e2e-group-1-debug.log
+    grep -irnHE 'err|fail' $DIRNAME/zkevm-mock-l1-network.log
+    # grep -irnHE 'err|fail' $DIRNAME/zkevm-prover.log
+    # grep -irnHE 'err|fail' $DIRNAME/zkevm-sequence-sender.log
+    # grep -irnHE 'err|fail' $DIRNAME/zkevm-sequencer.log
+    # grep -irnHE 'err|fail' $DIRNAME/zkevm-sync.log
+    return
+}
+
 test-e2e() {
-    exec >"$FUNCNAME-$DATE.log" 2>&1
-    # make stop test-full-non-e2e
-    make stop run test-e2e-group-1-debug
-    # make stop test-e2e-group-4
-    # make stop test-e2e-group-4
-    # make stop test-e2e-group-4
+    DIRNAME=tmp-test-e2e-$DATE
+    mkdir -p $DIRNAME
+    exec >"$DIRNAME/$FUNCNAME.log" 2>&1
+    make stop run run-explorer
+    sleep 10s
+    make test-e2e-group-1-debug >$DIRNAME/test-e2e-group-1-debug.log 2>&1
+    SRVS=$(docker-compose ps -a | cut -d ' ' -f 1 | sed 1d | xargs)
+    for item in $SRVS; do
+        docker-compose logs $item >$DIRNAME/$item.log 2>&1
+    done
+    make stop
 }
 
 addChainStateToB2Node() {

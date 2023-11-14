@@ -99,7 +99,7 @@ test-full-non-e2e: stop ## Runs non-e2e tests checking race conditions
 .PHONY: test-e2e-group-1-debug
 test-e2e-group-1-debug: ## Runs group 1 e2e tests checking race conditions
 	# trap '$(STOP)' EXIT; 
-	MallocNanoZone=0 go test -count=1 -race -v -p 1 -timeout 600s ../ci/e2e-group1/...
+	MallocNanoZone=0 go test -count=1 -race -v -p 1 -timeout 600s ../ci/e2e-group1/ethtransfer_test.go
 
 .PHONY: test-e2e-group-1
 test-e2e-group-1: stop ## Runs group 1 e2e tests checking race conditions
@@ -487,7 +487,7 @@ run: ## Runs a full node
 	$(RUNL2GASPRICER)
 	$(RUNAGGREGATOR)
 	# read -p "Press enter to continue"
-	# $(RUNJSONRPC)
+	$(RUNJSONRPC)
 
 .PHONY: stop
 stop: ## Stops all services
