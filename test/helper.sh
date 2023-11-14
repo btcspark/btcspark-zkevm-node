@@ -16,10 +16,10 @@ debug() {
     return
 }
 
-test() {
+test-e2e() {
     exec >"$FUNCNAME-$DATE.log" 2>&1
-    make stop test-full-non-e2e
-    # make stop test-e2e-group-1
+    # make stop test-full-non-e2e
+    make stop run test-e2e-group-1-debug
     # make stop test-e2e-group-4
     # make stop test-e2e-group-4
     # make stop test-e2e-group-4
@@ -29,7 +29,7 @@ addChainStateToB2Node() {
     set -e
     docker container rm -f b2-node
     source .env
-    cd /root/b2-node-single-client-all-data 
+    cd /root/b2-node-single-client-all-data
     bash helper.sh restore
     CHAIN_REPO_ID=$(git log -1 --format='%h')
     cd -
@@ -100,8 +100,6 @@ collectionLog() {
     done
 }
 
-alias psql="docker exec -interactive --tty zkevm-state-db psql "
-
 init() {
     exec >"$FUNCNAME.log" 2>&1
     # docker exec --help
@@ -113,18 +111,18 @@ init() {
 }
 
 probe() {
-    exec >"$FUNCNAME.log" 2>&1
+    # exec >"$FUNCNAME.log" 2>&1
     # grep -irE 'STATEDB.*:|POOLDB.*:|EVENTDB.*:|NETWORK' Makefile
 
-    export DATABASE_URL="postgres://l1_explorer_user:l1_explorer_password@192.168.50.127:5436/l1_explorer_db?sslmode=disable"
-    psql --echo-all $DATABASE_URL --file=zkevm-l1.sql
+    # export DATABASE_URL="postgres://l1_explorer_user:l1_explorer_password@192.168.50.127:5436/l1_explorer_db?sslmode=disable"
+    # psql --echo-all $DATABASE_URL --file=zkevm-l1.sql
     # return
-    export DATABASE_URL="postgres://pool_user:pool_password@192.168.50.127:5433/pool_db?sslmode=disable"
-    psql --echo-all $DATABASE_URL --file=zkevm-pool.sql
+    # export DATABASE_URL="postgres://pool_user:pool_password@192.168.50.127:5433/pool_db?sslmode=disable"
+    # psql --echo-all $DATABASE_URL --file=zkevm-pool.sql
 
     export DATABASE_URL="postgres://state_user:state_password@192.168.50.127:5432/state_db?sslmode=disable"
     psql --echo-all $DATABASE_URL --file=zkevm-state.sql
-
+    return
     export DATABASE_URL="postgres://event_user:event_password@192.168.50.127:5435/event_db?sslmode=disable"
     psql --echo-all $DATABASE_URL --file=zkevm-event.sql
     # psql --echo-all $DATABASE_URL --file=zkevm-event.sql --output=zkevm-event.log
@@ -183,6 +181,16 @@ repoStatus() {
         # git -C $item branch
         git -C $item diff
     done
+}
+
+changeHost() {
+    # toml set --help
+    # return
+    FILE=config/non-container-test.node.config.toml
+    toml set --toml-path $FILE State.DB.Port 5432
+    toml set --toml-path $FILE Pool.DB.Port 5433
+    toml set --toml-path $FILE EventLog.DB.Port 5435
+    toml set --toml-path $FILE HashDB.Port 5432
 }
 
 $@

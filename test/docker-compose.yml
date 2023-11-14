@@ -345,9 +345,9 @@ services:
       - 8545:8545
       - 8546:8546
       - 8126:8125
-    volumes:
-      - /root/b2-node-single-client-all-data:/root/.ethermintd
-      - ${PWD}:/host
+    # volumes:
+      # - /root/b2-node-single-client-all-data:/root/.ethermintd
+      # - ${PWD}:/host
       # - ./strace-out:/strace-out
 
   zkevm-prover:
