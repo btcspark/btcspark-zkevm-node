@@ -345,6 +345,22 @@ services:
       - 8545:8545
       - 8546:8546
       - 8126:8125
+    healthcheck:
+      test: 
+        - CMD
+        - curl 
+        - -X 
+        - POST 
+        - url 
+        - http://127.0.0.1:8545 
+        - -H 
+        - 'Content-Type: application/json;' 
+        - --data 
+        - '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}"'
+      interval: 5s
+      timeout: 10m
+      retries: 3
+ 
     # volumes:
       # - /root/b2-node-single-client-all-data:/root/.ethermintd
       # - ${PWD}:/host
@@ -359,6 +375,9 @@ services:
     volumes:
       - ./config/test.prover.config.json:/usr/src/app/config.json
       # - ./strace-out:/strace-out
+    depends_on:
+      zkevm-mock-l1-network:
+        condition: service_healthy
     command:
       - -c
       - /usr/src/app/config.json
@@ -373,6 +392,10 @@ services:
       - ./config/test.node.config.toml:/app/config.toml
       - ./config/test.genesis.config.json:/app/genesis.json
       # - ./strace-out:/strace-out
+    depends_on:
+      zkevm-mock-l1-network:
+        condition: service_healthy
+ 
     entrypoint:
       - /bin/sh
     command:

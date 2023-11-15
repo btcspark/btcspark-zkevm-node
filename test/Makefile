@@ -475,9 +475,9 @@ run: ## Runs a full node
 	$(RUNPOOLDB)
 	$(RUNEVENTDB)
 	$(RUNL1NETWORK)
-	sleep 5 
 	$(RUNZKPROVER)
 	$(RUNAPPROVE)
+	# TODO use healthcheck instead of sleep
 	sleep 5
 	$(RUNSYNC)
 	sleep 10
