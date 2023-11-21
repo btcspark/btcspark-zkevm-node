@@ -28,6 +28,19 @@ PYTHON         = $(or $(wildcard $(VENV_PYTHON)), "install_first_venv")
 GENERATE_SCHEMA_DOC = $(VENV)/bin/generate-schema-doc
 GENERATE_DOC_PATH=  "docs/config-file/"
 GENERATE_DOC_TEMPLATES_PATH=  "docs/config-file/templates/"
+DATE=$(shell date +%Y%m%d-%H%M%S)
+COMMITID=$(shell git log -1 --format='%h')
+BRANCH=$(shell git branch --show-current)
+GIT_TAG=$(shell git describe --tags --abbrev=0)
+IMAGE_REPO=ghcr.io/b2network/b2-zkevm-node
+IMAGE_TAG=${IMAGE_REPO}:${BRANCH}-${GIT_TAG}-${DATE}-${COMMITID}
+
+image-build: ## Builds a docker image with the node binary
+	docker build -t ${IMAGE_TAG} -f ./Dockerfile .
+image-push: ## Builds a docker image with the node binary
+	docker push --all-tags ${IMAGE_REPO}
+image-list:
+	docker images | grep 'ghcr.io/b2network/'
 
 .PHONY: build
 build: ## Builds the binary locally into ./dist

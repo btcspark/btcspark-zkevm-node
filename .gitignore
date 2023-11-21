@@ -1,6 +1,6 @@
 /dist/
 /test/e2e/keystore
-
+tmp-*
 /test/vectors/src/**/*md
 /test/vectors/src/**/*js
 /test/vectors/src/**/*sol
@@ -11,10 +11,6 @@
 /test/contracts/bin/**/*.abi
 
 **/.DS_Store
-.vscode
-.idea/
-.env
-out.dat
 
 cmd/__debug_bin
 
