@@ -105,6 +105,28 @@ services:
       - "-c"
       - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components rpc"
 
+  zkevm-rpc-json-rpc:
+    container_name: zkevm-rpc-json-rpc
+    image: ${B2_ZKEVM_NODE_IMAGE}
+    ports:
+      - 18123:8123
+      - 18133:8133 # needed if WebSockets enabled
+      - 19091:9091 # needed if metrics enabled
+    environment:
+      - ZKEVM_NODE_STATE_DB_HOST=zkevm-rpc-state-db
+      - ZKEVM_NODE_POOL_DB_HOST=zkevm-rpc-pool-db
+      - ZKEVM_NODE_MTCLIENT_URI=${ZKEVM_NODE_MTCLIENT_URI}
+      - ZKEVM_NODE_EXECUTOR_URI=${ZKEVM_NODE_EXECUTOR_URI}
+    volumes:
+      - ./config/test.rpc.node.config.toml:/app/config.toml
+      - ./config/test.genesis.config.json:/app/genesis.json
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "/app/b2-zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components rpc"
+
+
   zkevm-aggregator:
     container_name: zkevm-aggregator
     image: zkevm-node
@@ -139,6 +161,24 @@ services:
       - "-c"
       - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components synchronizer"
 
+  zkevm-rpc-sync:
+    container_name: zkevm-rpc-sync
+    image: ${B2_ZKEVM_NODE_IMAGE}
+    ports:
+      - 19095:9091 # needed if metrics enabled
+    environment:
+      - ZKEVM_NODE_STATE_DB_HOST=zkevm-rpc-state-db
+      - ZKEVM_NODE_MTCLIENT_URI=${ZKEVM_NODE_MTCLIENT_URI}
+      - ZKEVM_NODE_EXECUTOR_URI=${ZKEVM_NODE_EXECUTOR_URI}
+    volumes:
+      - ./config/test.rpc.node.config.toml:/app/config.toml
+      - ./config/test.genesis.config.json:/app/genesis.json
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "/app/b2-zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components synchronizer"
+
   zkevm-eth-tx-manager:
     container_name: zkevm-eth-tx-manager
     image: zkevm-node
@@ -170,6 +210,22 @@ services:
       - "-c"
       - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components l2gaspricer"
 
+  zkevm-rpc-l2gaspricer:
+    container_name: zkevm-rpc-l2gaspricer
+    image: ${B2_ZKEVM_NODE_IMAGE}
+    environment:
+      - ZKEVM_NODE_POOL_DB_HOST=zkevm-rpc-pool-db
+    volumes:
+      - ./test.keystore:/pk/keystore
+      - ./config/test.rpc.node.config.toml:/app/config.toml
+      - ./config/test.genesis.config.json:/app/genesis.json
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "/app/b2-zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components l2gaspricer"
+
+
   zkevm-state-db:
     container_name: zkevm-state-db
     image: postgres:15
@@ -183,6 +239,44 @@ services:
       - 5432:5432
     volumes:
       - ../db/scripts/init_prover_db.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=state_user
+      - POSTGRES_PASSWORD=state_password
+      - POSTGRES_DB=state_db
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+
+  zkevm-rpc-state-db:
+    container_name: zkevm-rpc-state-db
+    image: ${PG_IMAGE}
+    deploy:
+      <<: *dbResourceLimit
+    ports:
+      - 15432:5432
+    volumes:
+      - ../db/scripts/init_prover_db.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - POSTGRES_USER=state_user
+      - POSTGRES_PASSWORD=state_password
+      - POSTGRES_DB=state_db
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+
+  zkevm-agg-state-db:
+    container_name: zkevm-agg-state-db
+    image: ${PG_IMAGE}
+    deploy:
+      <<: *dbResourceLimit
+    ports:
+      - 25432:5432
+    volumes:
+      - ../db/scripts/init_prover_db.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/localtime:/etc/localtime:ro
     environment:
       - POSTGRES_USER=state_user
       - POSTGRES_PASSWORD=state_password
@@ -212,6 +306,42 @@ services:
       - "-N"
       - "500"
 
+  zkevm-rpc-pool-db:
+    container_name: zkevm-rpc-pool-db
+    image: ${PG_IMAGE}
+    deploy:
+      <<: *dbResourceLimit
+    ports:
+      - 15433:5432
+    environment:
+      - POSTGRES_USER=pool_user
+      - POSTGRES_PASSWORD=pool_password
+      - POSTGRES_DB=pool_db
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+
+  zkevm-agg-pool-db:
+    container_name: zkevm-agg-pool-db
+    image: ${PG_IMAGE}
+    deploy:
+      <<: *dbResourceLimit
+    ports:
+      - 25433:5432
+    environment:
+      - POSTGRES_USER=pool_user
+      - POSTGRES_PASSWORD=pool_password
+      - POSTGRES_DB=pool_db
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+
   zkevm-event-db:
     container_name: zkevm-event-db
     image: postgres:15
@@ -225,6 +355,44 @@ services:
       - 5435:5432
     volumes:
       - ../db/scripts/init_event_db.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=event_user
+      - POSTGRES_PASSWORD=event_password
+      - POSTGRES_DB=event_db
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+
+  zkevm-rpc-event-db:
+    container_name: zkevm-rpc-event-db
+    image: ${PG_IMAGE}
+    deploy:
+      <<: *dbResourceLimit
+    ports:
+      - 15435:5432
+    volumes:
+      - ../db/scripts/init_event_db.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - POSTGRES_USER=event_user
+      - POSTGRES_PASSWORD=event_password
+      - POSTGRES_DB=event_db
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+
+  zkevm-agg-event-db:
+    container_name: zkevm-agg-event-db
+    image: ${PG_IMAGE}
+    deploy:
+      <<: *dbResourceLimit
+    ports:
+      - 25435:5432
+    volumes:
+      - ../db/scripts/init_event_db.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/localtime:/etc/localtime:ro
     environment:
       - POSTGRES_USER=event_user
       - POSTGRES_PASSWORD=event_password
@@ -371,6 +539,19 @@ services:
       - "-c"
       - "/app/zkevm-node approve --network custom --custom-network-file /app/genesis.json --key-store-path /pk/keystore --pw testonly --am 115792089237316195423570985008687907853269984665640564039457584007913129639935 -y --cfg /app/config.toml"
 
+
+  zkevm-rpc-prover:
+    container_name: zkevm-rpc-prover
+    image: ${B2_ZKEVM_PROVER}
+    ports:
+      - 51061:50061 # MT
+      - 51071:50071 # Executor
+    volumes:
+      - ./config/test.rpc.prover.config.json:/usr/src/app/config.json
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - -c
+      - /usr/src/app/config.json
   zkevm-permissionless-db:
     container_name: zkevm-permissionless-db
     image: postgres:15
