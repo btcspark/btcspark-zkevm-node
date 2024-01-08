@@ -10,7 +10,7 @@ Outputs = ["stderr"]
 	User = "state_user"
 	Password = "state_password"
 	Name = "state_db"
-	Host = "zkevm-state-db"
+	Host = "zkevm-rpc-state-db"
 	Port = "5432"
 	EnableLog = false	
 	MaxConns = 200
@@ -51,7 +51,7 @@ GlobalQueue = 5242880
 	User = "pool_user"
 	Password = "pool_password"
 	Name = "pool_db"
-	Host = "zkevm-pool-db"
+	Host = "zkevm-rpc-pool-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
@@ -158,10 +158,10 @@ DefaultGasPriceWei = 1000000
 MaxGasPriceWei = 0
 
 [MTClient]
-URI  = "zkevm-prover:50061"
+URI  = "zkevm-rpc-prover:50061"
 
 [Executor]
-URI = "zkevm-prover:50071"
+URI = "zkevm-rpc-prover:50071"
 MaxGRPCMessageSize = 10000000000
 
 [Metrics]
@@ -177,7 +177,7 @@ ProfilingEnabled = true
 	User = "event_user"
 	Password = "event_password"
 	Name = "event_db"
-	Host = "zkevm-event-db"
+	Host = "zkevm-rpc-event-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
