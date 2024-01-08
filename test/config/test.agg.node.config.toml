@@ -1,8 +1,8 @@
-IsTrustedSequencer = true
+IsTrustedSequencer = false
 
 [Log]
-Environment = "development" # "production" or "development"
-Level = "debug"
+Environment = "production" # "production" or "development"
+Level = "info"
 Outputs = ["stderr"]
 
 [State]
@@ -10,7 +10,7 @@ Outputs = ["stderr"]
 	User = "state_user"
 	Password = "state_password"
 	Name = "state_db"
-	Host = "zkevm-state-db"
+	Host = "zkevm-agg-state-db"
 	Port = "5432"
 	EnableLog = false	
 	MaxConns = 200
@@ -36,8 +36,8 @@ MaxTxDataBytesSize=100000
 DefaultMinGasPriceAllowed = 1000000000
 MinAllowedGasPriceInterval = "5m"
 PollMinAllowedGasPriceInterval = "15s"
-AccountQueue = 64
-GlobalQueue = 1024
+AccountQueue = 100000
+GlobalQueue = 5242880
 	[Pool.EffectiveGasPrice]
 		Enabled = false
 		L1GasPriceFactor = 0.25
@@ -51,7 +51,7 @@ GlobalQueue = 1024
 	User = "pool_user"
 	Password = "pool_password"
 	Name = "pool_db"
-	Host = "zkevm-pool-db"
+	Host = "zkevm-agg-pool-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
@@ -70,6 +70,8 @@ ReadTimeout = "60s"
 WriteTimeout = "60s"
 MaxRequestsPerIPAndSecond = 5000
 SequencerNodeURI = ""
+BatchRequestsEnabled = true
+BatchRequestsLimit = 1000
 EnableL2SuggestedGasPricePolling = true
 	[RPC.WebSockets]
 		Enabled = true
@@ -78,8 +80,8 @@ EnableL2SuggestedGasPricePolling = true
 [Synchronizer]
 SyncInterval = "1s"
 SyncChunkSize = 100
-TrustedSequencerURL = "" # If it is empty or not specified, then the value is read from the smc.
-L1SynchronizationMode = "sequential" # "sequential" or "parallel"
+TrustedSequencerURL = "http://zkevm-json-rpc:8123" # If it is empty or not specified, then the value is read from the smc.
+L1SynchronizationMode = "parallel" # "sequential" or "parallel"
 	[Synchronizer.L1ParallelSynchronization]
 		MaxClients = 10
 		MaxPendingNoProcessedBlocks = 25
@@ -124,7 +126,7 @@ MaxTxLifetime = "3h"
 [SequenceSender]
 WaitPeriodSendSequence = "15s"
 LastBatchVirtualizationTimeMaxWaitPeriod = "10s"
-MaxTxSizeForL1 = 131072
+MaxTxSizeForL1 = 1073741824
 L2Coinbase = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
 PrivateKey = {Path = "/pk/sequencer.keystore", Password = "testonly"}
 
@@ -141,9 +143,10 @@ CleanupLockedProofsInterval = "2m"
 GeneratingProofCleanupThreshold = "10m"
 
 [EthTxManager]
+MaxTxLoadNum = 100
 ForcedGas = 0
 PrivateKeys = [
-	{Path = "/pk/sequencer.keystore", Password = "testonly"},
+#	{Path = "/pk/sequencer.keystore", Password = "testonly"},
 	{Path = "/pk/aggregator.keystore", Password = "testonly"}
 ]
 
@@ -151,15 +154,15 @@ PrivateKeys = [
 Type = "default"
 UpdatePeriod = "10s"
 Factor = 0.5
-DefaultGasPriceWei = 1000000000
+DefaultGasPriceWei = 1000000
 MaxGasPriceWei = 0
 
 [MTClient]
-URI  = "zkevm-prover:50061"
+URI  = "zkevm-agg-prover:50061"
 
 [Executor]
-URI = "zkevm-prover:50071"
-MaxGRPCMessageSize = 100000000
+URI = "zkevm-agg-prover:50071"
+MaxGRPCMessageSize = 10000000000
 
 [Metrics]
 Host = "0.0.0.0"
@@ -174,7 +177,7 @@ ProfilingEnabled = true
 	User = "event_user"
 	Password = "event_password"
 	Name = "event_db"
-	Host = "zkevm-event-db"
+	Host = "zkevm-agg-event-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
@@ -183,7 +186,7 @@ ProfilingEnabled = true
 User = "prover_user"
 Password = "prover_pass"
 Name = "prover_db"
-Host = "zkevm-state-db"
+Host = "zkevm-agg-state-db"
 Port = "5432"
 EnableLog = false
 MaxConns = 200
