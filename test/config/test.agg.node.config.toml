@@ -10,7 +10,7 @@ Outputs = ["stderr"]
 	User = "state_user"
 	Password = "state_password"
 	Name = "state_db"
-	Host = "zkevm-rpc-state-db"
+	Host = "zkevm-agg-state-db"
 	Port = "5432"
 	EnableLog = false	
 	MaxConns = 200
@@ -51,7 +51,7 @@ GlobalQueue = 5242880
 	User = "pool_user"
 	Password = "pool_password"
 	Name = "pool_db"
-	Host = "zkevm-rpc-pool-db"
+	Host = "zkevm-agg-pool-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
@@ -146,7 +146,7 @@ GeneratingProofCleanupThreshold = "10m"
 MaxTxLoadNum = 100
 ForcedGas = 0
 PrivateKeys = [
-	{Path = "/pk/sequencer.keystore", Password = "testonly"},
+#	{Path = "/pk/sequencer.keystore", Password = "testonly"},
 	{Path = "/pk/aggregator.keystore", Password = "testonly"}
 ]
 
@@ -158,10 +158,10 @@ DefaultGasPriceWei = 1000000
 MaxGasPriceWei = 0
 
 [MTClient]
-URI  = "zkevm-rpc-prover:50061"
+URI  = "zkevm-agg-prover:50061"
 
 [Executor]
-URI = "zkevm-rpc-prover:50071"
+URI = "zkevm-agg-prover:50071"
 MaxGRPCMessageSize = 10000000000
 
 [Metrics]
@@ -177,7 +177,7 @@ ProfilingEnabled = true
 	User = "event_user"
 	Password = "event_password"
 	Name = "event_db"
-	Host = "zkevm-rpc-event-db"
+	Host = "zkevm-agg-event-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
@@ -186,7 +186,7 @@ ProfilingEnabled = true
 User = "prover_user"
 Password = "prover_pass"
 Name = "prover_db"
-Host = "zkevm-rpc-state-db"
+Host = "zkevm-agg-state-db"
 Port = "5432"
 EnableLog = false
 MaxConns = 200

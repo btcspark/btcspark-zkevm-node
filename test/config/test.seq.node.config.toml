@@ -1,4 +1,4 @@
-IsTrustedSequencer = false
+IsTrustedSequencer = true
 
 [Log]
 Environment = "production" # "production" or "development"
@@ -10,7 +10,7 @@ Outputs = ["stderr"]
 	User = "state_user"
 	Password = "state_password"
 	Name = "state_db"
-	Host = "zkevm-rpc-state-db"
+	Host = "zkevm-state-db"
 	Port = "5432"
 	EnableLog = false	
 	MaxConns = 200
@@ -51,7 +51,7 @@ GlobalQueue = 5242880
 	User = "pool_user"
 	Password = "pool_password"
 	Name = "pool_db"
-	Host = "zkevm-rpc-pool-db"
+	Host = "zkevm-pool-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
@@ -80,7 +80,7 @@ EnableL2SuggestedGasPricePolling = true
 [Synchronizer]
 SyncInterval = "1s"
 SyncChunkSize = 100
-TrustedSequencerURL = "http://zkevm-json-rpc:8123" # If it is empty or not specified, then the value is read from the smc.
+TrustedSequencerURL = "" # If it is empty or not specified, then the value is read from the smc.
 L1SynchronizationMode = "parallel" # "sequential" or "parallel"
 	[Synchronizer.L1ParallelSynchronization]
 		MaxClients = 10
@@ -146,8 +146,8 @@ GeneratingProofCleanupThreshold = "10m"
 MaxTxLoadNum = 100
 ForcedGas = 0
 PrivateKeys = [
-	{Path = "/pk/sequencer.keystore", Password = "testonly"},
-	{Path = "/pk/aggregator.keystore", Password = "testonly"}
+	{Path = "/pk/sequencer.keystore", Password = "testonly"}
+#	{Path = "/pk/aggregator.keystore", Password = "testonly"}
 ]
 
 [L2GasPriceSuggester]
@@ -158,10 +158,10 @@ DefaultGasPriceWei = 1000000
 MaxGasPriceWei = 0
 
 [MTClient]
-URI  = "zkevm-rpc-prover:50061"
+URI  = "zkevm-prover:50061"
 
 [Executor]
-URI = "zkevm-rpc-prover:50071"
+URI = "zkevm-prover:50071"
 MaxGRPCMessageSize = 10000000000
 
 [Metrics]
@@ -177,7 +177,7 @@ ProfilingEnabled = true
 	User = "event_user"
 	Password = "event_password"
 	Name = "event_db"
-	Host = "zkevm-rpc-event-db"
+	Host = "zkevm-event-db"
 	Port = "5432"
 	EnableLog = false
 	MaxConns = 200
@@ -186,7 +186,7 @@ ProfilingEnabled = true
 User = "prover_user"
 Password = "prover_pass"
 Name = "prover_db"
-Host = "zkevm-rpc-state-db"
+Host = "zkevm-state-db"
 Port = "5432"
 EnableLog = false
 MaxConns = 200

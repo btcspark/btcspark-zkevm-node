@@ -8,7 +8,7 @@
 
     "runAggregatorServer": false,
     "runAggregatorClient": false,
-    "runAggregatorClientMock": false,
+    "runAggregatorClientMock": true,
     "aggregatorClientMockTimeout": 1,
     "proverName": "test-prover",
     
@@ -69,7 +69,7 @@
 
     "outputPath": "output",
 
-    "databaseURL": "postgresql://prover_user:prover_pass@zkevm-rpc-state-db:5432/prover_db",
+    "databaseURL": "postgresql://prover_user:prover_pass@zkevm-agg-state-db:5432/prover_db",
     "dbNodesTableName": "state.nodes",
     "dbProgramTableName": "state.program",
     "dbMultiWrite": true,
