@@ -556,6 +556,7 @@ run-roles: ## Runs the network according to the roles
 	$(RUNAGGZKPROVER1)
 	sleep 5
 	$(RUNAGGETHTXMANAGER)
+	$(RUNAGGREGATOR)
 
 
 .PHONY: stop-roles
