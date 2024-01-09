@@ -1,8 +1,8 @@
 IsTrustedSequencer = false
 
 [Log]
-Environment = "production" # "production" or "development"
-Level = "info"
+Environment = "development" # "production" or "development"
+Level = "debug"
 Outputs = ["stderr"]
 
 [State]
@@ -36,8 +36,8 @@ MaxTxDataBytesSize=100000
 DefaultMinGasPriceAllowed = 1000000000
 MinAllowedGasPriceInterval = "5m"
 PollMinAllowedGasPriceInterval = "15s"
-AccountQueue = 100000
-GlobalQueue = 5242880
+AccountQueue = 64
+GlobalQueue = 1024
 	[Pool.EffectiveGasPrice]
 		Enabled = false
 		L1GasPriceFactor = 0.25
@@ -78,9 +78,24 @@ EnableL2SuggestedGasPricePolling = true
 		Port = 8133
 
 [Synchronizer]
-SyncInterval = "2s"
+SyncInterval = "1s"
 SyncChunkSize = 100
 TrustedSequencerURL = "http://zkevm-json-rpc:8123" # If it is empty or not specified, then the value is read from the smc.
+L1SynchronizationMode = "sequential" # "sequential" or "parallel"
+	[Synchronizer.L1ParallelSynchronization]
+		MaxClients = 10
+		MaxPendingNoProcessedBlocks = 25
+		RequestLastBlockPeriod = "5s"
+		RequestLastBlockTimeout = "5s"
+		RequestLastBlockMaxRetries = 3
+		StatisticsPeriod = "5m"
+		TimeoutMainLoop = "5m"
+		RollupInfoRetriesSpacing= "5s"
+		FallbackToSequentialModeOnSynchronized = false
+		[Synchronizer.L1ParallelSynchronization.PerformanceWarning]
+			AceptableInacctivityTime = "5s"
+			ApplyAfterNumRollupReceived = 10
+
 
 [Sequencer]
 WaitPeriodPoolIsEmpty = "1s"
@@ -112,7 +127,7 @@ MaxTxLifetime = "3h"
 [SequenceSender]
 WaitPeriodSendSequence = "15s"
 LastBatchVirtualizationTimeMaxWaitPeriod = "10s"
-MaxTxSizeForL1 = 1073741824
+MaxTxSizeForL1 = 131072
 L2Coinbase = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
 PrivateKey = {Path = "/pk/sequencer.keystore", Password = "testonly"}
 
@@ -140,7 +155,7 @@ PrivateKeys = [
 Type = "default"
 UpdatePeriod = "10s"
 Factor = 0.5
-DefaultGasPriceWei = 1000000
+DefaultGasPriceWei = 1000000000
 MaxGasPriceWei = 0
 
 [MTClient]
@@ -148,7 +163,7 @@ URI  = "zkevm-rpc-prover:50061"
 
 [Executor]
 URI = "zkevm-rpc-prover:50071"
-MaxGRPCMessageSize = 10000000000
+MaxGRPCMessageSize = 100000000
 
 [Metrics]
 Host = "0.0.0.0"

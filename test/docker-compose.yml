@@ -107,7 +107,7 @@ services:
 
   zkevm-rpc-json-rpc:
     container_name: zkevm-rpc-json-rpc
-    image: ${B2_ZKEVM_NODE_IMAGE}
+    image: zkevm-node
     ports:
       - 18123:8123
       - 18133:8133 # needed if WebSockets enabled
@@ -124,7 +124,7 @@ services:
     command:
       - "/bin/sh"
       - "-c"
-      - "/app/b2-zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components rpc"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components rpc"
 
 
   zkevm-aggregator:
@@ -181,7 +181,7 @@ services:
 
   zkevm-rpc-sync:
     container_name: zkevm-rpc-sync
-    image: ${B2_ZKEVM_NODE_IMAGE}
+    image: zkevm-node
     ports:
       - 19095:9091 # needed if metrics enabled
     environment:
@@ -195,7 +195,7 @@ services:
     command:
       - "/bin/sh"
       - "-c"
-      - "/app/b2-zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components synchronizer"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components synchronizer"
 
   zkevm-agg-sync:
     container_name: zkevm-agg-sync
@@ -234,7 +234,7 @@ services:
 
   zkevm-agg-eth-tx-manager:
     container_name: zkevm-agg-eth-tx-manager
-    image: ${B2_ZKEVM_NODE_IMAGE}
+    image: zkevm-node
     ports:
       - 9294:9091 # needed if metrics enabled
     environment:
@@ -265,7 +265,7 @@ services:
 
   zkevm-rpc-l2gaspricer:
     container_name: zkevm-rpc-l2gaspricer
-    image: ${B2_ZKEVM_NODE_IMAGE}
+    image: zkevm-node
     environment:
       - ZKEVM_NODE_POOL_DB_HOST=zkevm-rpc-pool-db
     volumes:
@@ -276,7 +276,7 @@ services:
     command:
       - "/bin/sh"
       - "-c"
-      - "/app/b2-zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components l2gaspricer"
+      - "/app/zkevm-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components l2gaspricer"
 
 
   zkevm-state-db:
@@ -303,9 +303,13 @@ services:
 
   zkevm-rpc-state-db:
     container_name: zkevm-rpc-state-db
-    image: ${PG_IMAGE}
+    image: postgres:15
     deploy:
-      <<: *dbResourceLimit
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
     ports:
       - 15432:5432
     volumes:
@@ -321,9 +325,13 @@ services:
 
   zkevm-agg-state-db:
     container_name: zkevm-agg-state-db
-    image: ${PG_IMAGE}
+    image: postgres:15
     deploy:
-      <<: *dbResourceLimit
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
     ports:
       - 25432:5432
     volumes:
@@ -359,9 +367,13 @@ services:
 
   zkevm-rpc-pool-db:
     container_name: zkevm-rpc-pool-db
-    image: ${PG_IMAGE}
+    image: postgres:15
     deploy:
-      <<: *dbResourceLimit
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
     ports:
       - 15433:5432
     environment:
@@ -377,9 +389,13 @@ services:
 
   zkevm-agg-pool-db:
     container_name: zkevm-agg-pool-db
-    image: ${PG_IMAGE}
+    image: postgres:15
     deploy:
-      <<: *dbResourceLimit
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
     ports:
       - 25433:5432
     environment:
@@ -417,9 +433,13 @@ services:
 
   zkevm-rpc-event-db:
     container_name: zkevm-rpc-event-db
-    image: ${PG_IMAGE}
+    image: postgres:15
     deploy:
-      <<: *dbResourceLimit
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
     ports:
       - 15435:5432
     volumes:
@@ -435,9 +455,13 @@ services:
 
   zkevm-agg-event-db:
     container_name: zkevm-agg-event-db
-    image: ${PG_IMAGE}
+    image: postgres:15
     deploy:
-      <<: *dbResourceLimit
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
     ports:
       - 25435:5432
     volumes:
