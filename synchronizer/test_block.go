@@ -61,7 +61,7 @@ func GetBlockByNumber(ctx context.Context, rpcUrl string, blockNumber uint64) (*
 	if err != nil {
 		return nil, err
 	}
-	err = c.CallContext(ctx, &raw, "eth_getBlockByNumber", toBlockNumArg(new(big.Int).SetUint64(blockNumber)))
+	err = c.CallContext(ctx, &raw, "eth_getBlockByNumber", toBlockNumArg(new(big.Int).SetUint64(blockNumber)), true)
 	if err != nil {
 		return nil, err
 	}
