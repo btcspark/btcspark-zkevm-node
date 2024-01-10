@@ -23,6 +23,7 @@ type EthermanInterface interface {
 	GetTrustedSequencerURL() (string, error)
 	VerifyGenBlockNumber(ctx context.Context, genBlockNumber uint64) (bool, error)
 	GetLatestVerifiedBatchNum() (uint64, error)
+	GetL1NodeRPC() string
 }
 
 // stateInterface gathers the methods required to interact with the state.
