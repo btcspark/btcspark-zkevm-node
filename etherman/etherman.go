@@ -1222,3 +1222,7 @@ func (etherMan *Client) generateRandomAuth() (bind.TransactOpts, error) {
 
 	return *auth, nil
 }
+
+func (etherMan *Client) GetL1NodeRPC() string {
+	return etherMan.cfg.URL
+}
