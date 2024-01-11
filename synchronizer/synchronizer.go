@@ -691,10 +691,9 @@ hash and has parent. This operation has to be done until a match is found.
 func (s *ClientSynchronizer) checkReorg(latestBlock *state.Block) (*state.Block, error) {
 	// This function only needs to worry about reorgs if some of the reorganized blocks contained rollup info.
 	latestEthBlockSynced := *latestBlock
-	rpcUrl := s.etherMan.GetL1NodeRPC()
 	var depth uint64
 	for {
-		block, err := GetBlockByNumber(s.ctx, rpcUrl, latestBlock.BlockNumber)
+		block, err := s.etherMan.GetEthermintBlockByNum(s.ctx, latestBlock.BlockNumber)
 		//block, err := s.etherMan.EthBlockByNumber(s.ctx, latestBlock.BlockNumber)
 		if err != nil {
 			log.Errorf("error getting latest block synced from blockchain. Block: %d, error: %v", latestBlock.BlockNumber, err)

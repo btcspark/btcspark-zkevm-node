@@ -1,7 +1,6 @@
-package synchronizer
+package etherman
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -28,17 +27,17 @@ func (i *BigInt) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type Block struct {
+type EthermintBlock struct {
 	BlockNumber     *BigInt     `json:"number"`
 	BlockHash       common.Hash `json:"hash"`
 	BlockParentHash common.Hash `json:"parentHash"`
 }
 
-func (b *Block) ParentHash() common.Hash { return b.BlockParentHash }
+func (b *EthermintBlock) ParentHash() common.Hash { return b.BlockParentHash }
 
-func (b *Block) Hash() common.Hash { return b.BlockHash }
+func (b *EthermintBlock) Hash() common.Hash { return b.BlockHash }
 
-func (b *Block) NumberU64() uint64 { return b.BlockNumber.Uint64() }
+func (b *EthermintBlock) NumberU64() uint64 { return b.BlockNumber.Uint64() }
 
 func toBlockNumArg(number *big.Int) string {
 	if number == nil {
@@ -53,22 +52,4 @@ func toBlockNumArg(number *big.Int) string {
 	}
 	// It's negative and large, which is invalid.
 	return fmt.Sprintf("<invalid %d>", number)
-}
-
-func GetBlockByNumber(ctx context.Context, rpcUrl string, blockNumber uint64) (*Block, error) {
-	var raw json.RawMessage
-	c, err := rpc.Dial(rpcUrl)
-	if err != nil {
-		return nil, err
-	}
-	err = c.CallContext(ctx, &raw, "eth_getBlockByNumber", toBlockNumArg(new(big.Int).SetUint64(blockNumber)), true)
-	if err != nil {
-		return nil, err
-	}
-	block := &Block{}
-	if err := json.Unmarshal(raw, &block); err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	return block, nil
 }

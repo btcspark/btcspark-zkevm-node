@@ -134,6 +134,7 @@ type externalGasProviders struct {
 // Client is a simple implementation of EtherMan.
 type Client struct {
 	EthClient             ethereumClient
+	RpcClient             *rpc.Client
 	ZkEVM                 *polygonzkevm.Polygonzkevm
 	GlobalExitRootManager *polygonzkevmglobalexitroot.Polygonzkevmglobalexitroot
 	Matic                 *matic.Matic
@@ -184,6 +185,7 @@ func NewClient(cfg Config, l1Config L1Config) (*Client, error) {
 
 	return &Client{
 		EthClient:             ethClient,
+		RpcClient:             ethClient.Client(),
 		ZkEVM:                 poe,
 		Matic:                 matic,
 		GlobalExitRootManager: globalExitRoot,
@@ -1223,6 +1225,16 @@ func (etherMan *Client) generateRandomAuth() (bind.TransactOpts, error) {
 	return *auth, nil
 }
 
-func (etherMan *Client) GetL1NodeRPC() string {
-	return etherMan.cfg.URL
+func (etherMan *Client) GetEthermintBlockByNum(ctx context.Context, blockNumber uint64) (*EthermintBlock, error) {
+	var raw json.RawMessage
+	err := etherMan.RpcClient.CallContext(ctx, &raw, "eth_getBlockByNumber", toBlockNumArg(new(big.Int).SetUint64(blockNumber)), true)
+	if err != nil {
+		return nil, err
+	}
+	block := &EthermintBlock{}
+	if err := json.Unmarshal(raw, &block); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return block, nil
 }
