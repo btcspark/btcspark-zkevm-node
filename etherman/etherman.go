@@ -1570,9 +1570,15 @@ func (etherMan *Client) EthBlockByNumber(ctx context.Context, blockNumber uint64
 		}
 		return nil, err
 	}
-	ethermintBlock, err := etherMan.GetEthermintBlockByNum(ctx, blockNumber)
+	if block == nil {
+		return nil, ErrNotFound
+	}
+	ethermintBlock, err := etherMan.GetEthermintBlockByNum(ctx, block.NumberU64())
 	if err != nil {
 		return nil, err
+	}
+	if ethermintBlock == nil {
+		return nil, ErrNotFound
 	}
 	etherBlock := &EtherBlock{
 		Block:     block,
@@ -1895,7 +1901,6 @@ func (etherMan *Client) GetEthermintBlockByNum(ctx context.Context, blockNumber 
 	}
 	block := &EthermintBlock{}
 	if err := json.Unmarshal(raw, &block); err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	return block, nil
